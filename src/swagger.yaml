@@ -1,0 +1,76 @@
+openapi: 3.0.0
+info:
+  title: Zapbo API
+  description: API para gerenciar números de mensagens.
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/
+    description: Servidor local de desenvolvimento
+
+paths:
+  /:
+    get:
+      summary: Obtém todos os números
+      description: Retorna uma lista de todos os números registrados.
+      responses:
+        '200':
+          description: Lista de números obtida com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: ID do número.
+                    number:
+                      type: string
+                      description: O número de telefone.
+        '500':
+          description: Erro no servidor
+
+    post:
+      summary: Adiciona um novo número
+      description: Adiciona um novo número à lista de números.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number:
+                  type: string
+                  description: O número de telefone a ser adicionado.
+      responses:
+        '201':
+          description: Número adicionado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ID gerado para o número.
+                  number:
+                    type: string
+                    description: O número de telefone adicionado.
+        '400':
+          description: Dados inválidos fornecidos
+        '500':
+          description: Erro no servidor
+
+components:
+  schemas:
+    Number:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID do número.
+        number:
+          type: string
+          description: O número de telefone.
