@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3000/
-    description: Servidor local de desenvolvimento
+    description: zapbo API server
 
 paths:
   /:
@@ -13,7 +13,7 @@ paths:
       summary: Obtém todos os números
       description: Retorna uma lista de todos os números registrados.
       responses:
-        '200':
+        "200":
           description: Lista de números obtida com sucesso
           content:
             application/json:
@@ -28,12 +28,12 @@ paths:
                     number:
                       type: string
                       description: O número de telefone.
-        '500':
+        "500":
           description: Erro no servidor
 
     post:
-      summary: Adiciona um novo número
-      description: Adiciona um novo número à lista de números.
+      summary: Adiciona uma lista de números
+      description: Adiciona uma lista de números à lista de números registrados.
       requestBody:
         required: true
         content:
@@ -41,27 +41,81 @@ paths:
             schema:
               type: object
               properties:
-                number:
-                  type: string
-                  description: O número de telefone a ser adicionado.
+                numbers:
+                  type: array
+                  description: Lista de números de telefone a serem adicionados.
+                  items:
+                    type: string
+                    description: Um número de telefone válido.
       responses:
-        '201':
-          description: Número adicionado com sucesso
+        "201":
+          description: Números adicionados com sucesso
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: integer
-                    description: ID gerado para o número.
-                  number:
-                    type: string
-                    description: O número de telefone adicionado.
-        '400':
+                  numbersAdded:
+                    type: array
+                    description: Lista dos números adicionados com sucesso.
+                    items:
+                      type: string
+                      description: Número de telefone adicionado.
+        "400":
           description: Dados inválidos fornecidos
-        '500':
+        "500":
           description: Erro no servidor
+
+  /send:
+    post:
+      summary: Envia uma mensagem com foto para um número.
+      description: Envia uma mensagem de texto e foto para um número armazenado no banco de dados.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Message"
+      responses:
+        "200":
+          description: Mensagem enviada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indica se a mensagem foi enviada com sucesso.
+                  message:
+                    type: string
+                    description: Mensagem de confirmação.
+        "400":
+          description: Requisição inválida
+        "500":
+          description: Erro no servidor
+  /sendToMany:
+    post:
+      summary: Envia uma mensagem com foto para todos os números armazenados.
+      description: Envia uma mensagem de texto e foto para todos os números de telefone registrados no banco de dados. Nenhum dado adicional é necessário na requisição.
+      responses:
+        "200":
+          description: Mensagens enviadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Indica se as mensagens foram enviadas com sucesso.
+                  message:
+                    type: string
+                    description: Mensagem de confirmação.
+        "500":
+          description: Erro no servidor
+
+
 
 components:
   schemas:
@@ -71,6 +125,16 @@ components:
         id:
           type: integer
           description: ID do número.
-        number:
+        numbers:
+          type: array
+          description: Lista de números de telefone.
+          items:
+            type: string
+            description: Um número de telefone válido.
+
+    Message:
+      type: object
+      properties:
+        message:
           type: string
-          description: O número de telefone.
+          description: A mensagem de texto que será enviada junto com a foto.

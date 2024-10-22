@@ -5,5 +5,7 @@ const messageController = new Controller();
 
 router.get("/", messageController.getNumbers);
 router.post("/", messageController.addNumber);
+router.post("/send", messageController.sendMessage);
+router.post("/sendToMany", messageController.sendToMany);
 
 module.exports = router;

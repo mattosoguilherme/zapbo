@@ -23,6 +23,7 @@
     "mysql2": "^3.11.3",
     "node-cron": "^3.0.3",
     "prisma": "^5.21.1",
+    "qrcode-terminal": "^0.12.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "yaml": "^2.6.0",

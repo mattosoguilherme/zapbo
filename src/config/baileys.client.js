@@ -1,23 +1,36 @@
-const makeWASocket = require("@whiskeysockets/baileys").makeWASocket;
-const { DisconnectReason } = require("@whiskeysockets/baileys/Constants");
-const Boom = require("@hapi/boom");
+const { Boom } = require("@hapi/boom");
+const {
+  DisconnectReason,
+  useMultiFileAuthState,
+  makeWASocket,
+} = require("@whiskeysockets/baileys");
+const { log } = require("console");
+const { readFileSync } = require("fs");
 
-let sock;
+let sock = null; // Variável global para armazenar o socket
+let state = null; // Variável global para o estado de autenticação
+let saveCreds = null; // Variável global para a função de salvar credenciais
 
-const connectToWhatsApp = () => {
+// Função para inicializar o estado de autenticação e conectar
+const connect = async () => {
+  const authState = await useMultiFileAuthState("auth_info_baileys");
+  state = authState.state; // Salva o estado de autenticação
+  saveCreds = authState.saveCreds; // Salva a função de salvar credenciais
+
+  // Conecta usando o estado de autenticação fornecido
   sock = makeWASocket({
-    printQRInTerminal: true, // Imprime o QR Code no terminal para escaneamento
+    auth: state, // Usa o estado armazenado
+    printQRInTerminal: true,
   });
 
-  // Evento de atualização de conexão
+  // Escuta eventos de conexão
   sock.ev.on("connection.update", (update) => {
     const { connection, lastDisconnect } = update;
-
     if (connection === "close") {
       const shouldReconnect =
-        (lastDisconnect.error instanceof Boom
-          ? lastDisconnect.error?.output?.statusCode
-          : 0) !== DisconnectReason.loggedOut;
+        lastDisconnect.error instanceof Boom &&
+        lastDisconnect.error.output?.statusCode !== DisconnectReason.loggedOut;
+
       console.log(
         "Conexão fechada devido a",
         lastDisconnect.error,
@@ -25,34 +38,44 @@ const connectToWhatsApp = () => {
         shouldReconnect
       );
 
-      // Reconectar se não estiver deslogado
+      // Reconectar se não estiver desconectado (logged out)
       if (shouldReconnect) {
-        connectToWhatsApp();
+        connect(); // Rechama a função connect para reconectar
       }
     } else if (connection === "open") {
-      console.log("Conexão aberta");
+      console.log("Conexão estabelecida");
     }
   });
 
-  // Evento de recebimento de mensagens
-  sock.ev.on("messages.upsert", async (m) => {
-    console.log(m);
-
-    const message = m.messages[0];
-    console.log("Mensagem recebida:", JSON.stringify(message, null, 2));
-
-    // Responder automaticamente às mensagens recebidas (ajuste conforme necessário)
-    if (message.key.fromMe === false && message.key.remoteJid) {
-      try {
-        console.log("Respondendo a", message.key.remoteJid);
-        await sock.sendMessage(message.key.remoteJid, { text: "Hello there!" });
-      } catch (err) {
-        console.error("Erro ao responder mensagem:", err);
-      }
-    }
-  });
-
-  return sock;
+  // Atualiza as credenciais sempre que houver uma mudança
+  sock.ev.on("creds.update", saveCreds);
 };
 
-export default connectToWhatsApp;
+// Função para enviar mensagens
+const sendBailey = async (number, message) => {
+  // Verifica se o socket está conectado
+  if (!sock) {
+    console.log("A conexão não foi estabelecida ainda.");
+    throw new Error("A conexão não foi estabelecida ainda.");
+  }
+
+  const buffer = readFileSync("c:/coder.mattoso/zapbo/src/assets/cine.jpg");
+
+  try {
+    // Envia a mensagem após a conexão ser estabelecida
+    await sock.sendMessage(`${number}@s.whatsapp.net`, {
+      image: buffer,
+      caption: message,
+    });
+
+  } catch (error) {
+    console.log("Erro ao enviar a mensagem:", error);
+    throw error;
+  }
+};
+
+// Exporta as funções
+module.exports = {
+  connect,
+  sendBailey,
+};
