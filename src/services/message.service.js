@@ -57,7 +57,7 @@ class MessageService {
       if (!this.isWithinSchedule()) {
         console.log("Fora do horário permitido.");
 
-        await new Promise((resolve) => setTimeout(resolve, 5 * 60 * 1000)); // Espera 5min e tenta novamente;
+        await new Promise((resolve) => setTimeout(resolve, 1 * 60 * 1000)); // Espera 5min e tenta novamente;
         continue; // Volta ao início do loop para verificar o horário novamente
       }
 
@@ -89,6 +89,8 @@ class MessageService {
           break;
         }
       }
+
+      break;
     }
   }
 }

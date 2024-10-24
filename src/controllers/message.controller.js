@@ -64,17 +64,16 @@ class MessageController {
   }
 
   async sendToMany(req, res) {
-    try {
-      await messageService.sendToMany();
-
-      res.status(200).json({
-        message: "Mensagens enviadas com sucesso. messagem do controler",
+    await messageService
+      .startCronJob()
+      .then(() => {
+        res.status(200).json({
+          message: "Mensagens enviadas com sucesso. messagem do controler",
+        });
+      })
+      .catch((error) => {
+        res.status(500).json({ message: "do controller...Erro ao enviar mensagem", error });
       });
-    } catch (error) {
-      console.log("Erro ao enviar mensagem:", error);
-
-      res.status(500).json({ message: "Erro ao enviar mensagem", error });
-    }
   }
 }
 

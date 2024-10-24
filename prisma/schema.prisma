@@ -8,11 +8,22 @@ datasource db {
 }
 
 model Contact {
-  id         Int      @id @default(autoincrement())
-  number     String   @unique
-  status     String   @default("PENDENTE")
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id         Int          @id @default(autoincrement())
+  number     String       @unique
+  status     String       @default("PENDENTE")
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  MessageLog MessageLog[]
 
   @@map("contacts")
+}
+
+model MessageLog {
+  id        Int      @id @default(autoincrement())
+  contactId Int
+  contact   Contact  @relation(fields: [contactId], references: [id])
+  sentAt    DateTime @default(now())
+  message   String
+
+  @@map("messageLogs")
 }

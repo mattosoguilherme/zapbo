@@ -69,7 +69,24 @@ const sendBailey = async (number, message) => {
       image: buffer,
       caption: message,
     });
+  } catch (error) {
+    console.log("Erro ao enviar a mensagem:", error);
+    throw error;
+  }
+};
 
+const sendAdm = async (message) => {
+  // Verifica se o socket está conectado
+  if (!sock) {
+    console.log("A conexão não foi estabelecida ainda.");
+    throw new Error("A conexão não foi estabelecida ainda.");
+  }
+
+  try {
+    // Envia a mensagem após a conexão ser estabelecida
+    await sock.sendMessage(`5511992767398@s.whatsapp.net`, {
+      text: message,
+    });
   } catch (error) {
     console.log("Erro ao enviar a mensagem:", error);
     throw error;
@@ -80,4 +97,5 @@ const sendBailey = async (number, message) => {
 module.exports = {
   connect,
   sendBailey,
+  sendAdm,
 };
