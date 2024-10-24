@@ -3,6 +3,7 @@ const {
   DisconnectReason,
   useMultiFileAuthState,
   makeWASocket,
+  Browsers,
 } = require("@whiskeysockets/baileys");
 const { log } = require("console");
 const { readFileSync } = require("fs");
@@ -21,6 +22,7 @@ const connect = async () => {
   sock = makeWASocket({
     auth: state, // Usa o estado armazenado
     printQRInTerminal: true,
+    browser: Browsers.windows("Desktop"),
   });
 
   // Escuta eventos de conexão

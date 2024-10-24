@@ -10,6 +10,7 @@ yarn-error.log*
 
 # Diretórios de upload temporários
 /uploads
+/temps
 
 # Diretórios do Prisma
 /prisma/migrations/
