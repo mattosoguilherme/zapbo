@@ -35,81 +35,60 @@ class MessageService {
   isWithinSchedule() {
     const now = new Date();
     const currentHour = now.getHours();
-    console.log("--------------------------------------------------");
-    console.log(`Hora atual: ${now.toLocaleTimeString()}`);
-    console.log(currentHour);
-
-    console.log(`Horário permitido: ${this.startHour}h às ${this.endHour}h`);
-
-    console.log("--------------------------------------------------");
-
     return currentHour >= this.startHour && currentHour <= this.endHour;
   }
 
-  // Função que espera até o horário especificado para começar a enviar
-  async waitUntilStartHour() {
-    return new Promise((resolve) => {
-      const now = new Date();
-      const currentTimeString = now.toLocaleTimeString();
-      const currentHour = now.getHours();
-
-      // Corrigido para verificar se o horário atual está fora do intervalo permitido
-      if (currentHour >= this.startHour && currentHour < this.endHour) {
-        console.log(
-          `Já estamos no horário permitido (${this.startHour}:00). Iniciando envios...`
-        );
-        resolve(); // Já estamos no horário certo
-      } else {
-        const startTime = new Date(now);
-        startTime.setHours(this.startHour, 0, 0, 0); // Define o horário exato de início
-        const waitTime = startTime.getTime() - now.getTime(); // Calcula o tempo de espera
-
-        console.log(
-          `Hora atual: ${currentTimeString}. Envios começarão às ${this.startHour}.`
-        );
-        setTimeout(resolve, waitTime); // Espera até o horário certo
-      }
-    });
-  }
-
   async sendToMany() {
-    await this.waitUntilStartHour();
+    // // Espera até o horário de início para começar
+    // await this.waitUntilStartHour();
 
-    // (await this.getNumbers()).filter(
-    //   (objeto) => objeto.status === "PENDENTE"
-    // );
-
-    const contatos = [{ number: "5511992767398", id: 1 }];
+    // [
+    //   { number: "5511992767398", id: 1 },
+    //   { number: "5511992767398", id: 2 },
+    //   { number: "5511992767398", id: 3 },
+    // ];
+    const contatos = (await this.getNumbers()).filter(
+      (objeto) => objeto.status === "PENDENTE"
+    );
     const msg =
       "🎉 Descubra o CINEFLICK por apenas R$19,90/mês! 🎬 Mergulhe em um mundo de entretenimento com mais de 60.000 conteúdos em qualidade SD, HD, FHD e 4K! 📺✨ Com nosso guia de programação (EPG), você nunca perde seu programa favorito. Assista onde quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Pacote completo de filmes e séries te espera! Não fique de fora, venha assistir ao que há de melhor!                                                                                                 Responda *Eu quero* se quiser *instalação gratuita e acesso teste* ";
-    // Espera até o horário de início para começar
 
-    for (let contato of contatos) {
-      // Verifique se ainda estamos dentro do horário permitido antes de enviar
+    while (true) {
       if (!this.isWithinSchedule()) {
-        console.log("Fora do horário permitido. Pausando envios.");
-        break; // Sai do loop se não estiver mais dentro do horário
+        console.log("Fora do horário permitido.");
+
+        await new Promise((resolve) => setTimeout(resolve, 5 * 60 * 1000)); // Espera 5min e tenta novamente;
+        continue; // Volta ao início do loop para verificar o horário novamente
       }
 
-      await sendBailey(contato.number, msg)
-        .then(async () => {
-          console.log(
-            `Mensagem enviada para ${
-              contato.number
-            } às ${new Date().toLocaleTimeString()}`
-          );
+      console.log("Enviando mensagens...");
 
-          await prisma.contact.update({
-            where: { id: contato.id },
-            data: { status: "ENVIADO" },
+      for (let contato of contatos) {
+        await sendBailey(contato.number, msg)
+          .then(async () => {
+            console.log(
+              `Mensagem enviada para ${
+                contato.number
+              } às ${new Date().toLocaleTimeString()}`
+            );
+
+            await prisma.contact.update({
+              where: { id: contato.id },
+              data: { status: "ENVIADO" },
+            });
+          })
+          .catch((error) => {
+            console.log("Erro ao enviar mensagem:", error);
           });
-        })
-        .catch((error) => {
-          console.log("Erro ao enviar mensagem:", error);
-        });
 
-      // Espera 4 minutos antes de enviar a próxima mensagem
-      await new Promise((resolve) => setTimeout(resolve, this.delay));
+        // Espera 4 minutos antes de enviar a próxima mensagem
+        await new Promise((resolve) => setTimeout(resolve, this.delay));
+
+        if (!this.isWithinSchedule()) {
+          console.log("pausando envios por hoje...");
+          break;
+        }
+      }
     }
   }
 }
