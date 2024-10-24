@@ -42,11 +42,12 @@ class MessageService {
     // // Espera até o horário de início para começar
     // await this.waitUntilStartHour();
 
-    // [
-    //   { number: "5511992767398", id: 1 },
-    //   { number: "5511992767398", id: 2 },
-    //   { number: "5511992767398", id: 3 },
-    // ];
+   const tteste= [
+      { number: "5511992767398", id: 1 },
+      { number: "5511992767398", id: 2 },
+      { number: "5511992767398", id: 3 },
+    ];
+    
     const contatos = (await this.getNumbers()).filter(
       (objeto) => objeto.status === "PENDENTE"
     );

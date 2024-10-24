@@ -33,12 +33,12 @@ const connect = async () => {
         lastDisconnect.error instanceof Boom &&
         lastDisconnect.error.output?.statusCode !== DisconnectReason.loggedOut;
 
-      console.log(
-        "Conexão fechada devido a",
-        lastDisconnect.error,
-        ", reconectando:",
-        shouldReconnect
-      );
+      // console.log(
+      //   "Conexão fechada devido a",
+      //   lastDisconnect.error,
+      //   ", reconectando:",
+      //   shouldReconnect
+      // );
 
       // Reconectar se não estiver desconectado (logged out)
       if (shouldReconnect) {

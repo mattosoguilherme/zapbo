@@ -65,7 +65,7 @@ class MessageController {
 
   async sendToMany(req, res) {
     await messageService
-      .startCronJob()
+      .sendToMany()
       .then(() => {
         res.status(200).json({
           message: "Mensagens enviadas com sucesso. messagem do controler",
