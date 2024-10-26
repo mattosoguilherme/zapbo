@@ -52,15 +52,12 @@ class MessageController {
   async sendMessage(req, res) {
     const { message } = req.body;
 
-    try {
-      await messageService.send(message);
-
-      res.status(200).json({ message: "Mensagem enviada com sucesso" });
-    } catch (error) {
-      console.log("Erro ao enviar mensagem:", error);
-
-      res.status(500).json({ message: "Erro ao enviar mensagem", error });
-    }
+    await messageService
+      .send(message)
+      .then(() => { res.status(200).json({ message: "Mensagem enviada com sucesso" }); })
+      .catch((error) => {
+        res.status(500).json({ message: "Erro ao enviar mensagem", error });
+      });
   }
 
   async sendToMany(req, res) {
@@ -72,7 +69,24 @@ class MessageController {
         });
       })
       .catch((error) => {
-        res.status(500).json({ message: "do controller...Erro ao enviar mensagem", error });
+        res
+          .status(500)
+          .json({ message: "do controller...Erro ao enviar mensagem", error });
+      });
+  }
+
+  async dailyReport(req, res) {
+    const { mes, dia, ano } = req.body;
+
+    const data = new Date(ano, mes - 1, dia);
+
+    await messageService
+      .generateDailyReport(data)
+      .then(() =>
+        res.status(200).json({ message: "Relatório gerado com sucesso" })
+      )
+      .catch((error) => {
+        res.status(500).json({ message: "Erro ao gerar relatório", error });
       });
   }
 }

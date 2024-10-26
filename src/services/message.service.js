@@ -1,11 +1,56 @@
 const prisma = require("../config/prisma.cliente");
-const { sendBailey } = require("../config/baileys.client");
+const { sendBailey, sendAdm, sendTest } = require("../config/baileys.client");
 
 class MessageService {
   constructor() {
-    this.startHour = 9; // Hora de início (9h da manhã, por exemplo)
+    this.startHour = 7; // Hora de início (9h da manhã, por exemplo)
     this.endHour = 21; // Hora de término (21h, por exemplo)
     this.delay = 4 * 60 * 1000; // 4 minutos em milissegundos (240000 ms)
+  }
+
+  async generateDailyReport(date) {
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0); // Início do dia
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999); // Fim do dia
+
+    const totalMessages = await prisma.messageLog.count({
+      where: {
+        sentAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+
+    const relatorio = {
+      date: startDate.toISOString().split("T")[0], // Formato YYYY-MM-DD
+      totalMessages: totalMessages,
+    };
+
+    await sendAdm(
+      `Sr. Mattoso,\n\nsegue o relatório do dia *${relatorio.date}*:\n\n*${relatorio.totalMessages}* mensagens enviadas.`
+    );
+  }
+
+  async relatoriofimdodia() {
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0); // Início do dia
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999); // Fim do dia
+
+    const totalMessages = await prisma.messageLog.count({
+      where: {
+        sentAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+
+    await sendAdm(
+      `Sr. Mattoso, boa noite\n\nFim do espediente.\n\nsegue o relatório do dia:\n\n*${totalMessages}* mensagens enviadas.\n\nAté amanhã!`
+    );
   }
 
   async addNumber(number) {
@@ -26,9 +71,7 @@ class MessageService {
   }
 
   async send(mensagem) {
-    const contact = await this.getNumbers();
-
-    return await sendBailey("5511992767398", mensagem);
+    await sendTest();
   }
 
   // Função para verificar se estamos dentro do horário permitido
@@ -42,17 +85,18 @@ class MessageService {
     // // Espera até o horário de início para começar
     // await this.waitUntilStartHour();
 
-   const tteste= [
+    const tteste = [
       { number: "5511992767398", id: 1 },
       { number: "5511992767398", id: 2 },
       { number: "5511992767398", id: 3 },
     ];
-    
+
     const contatos = (await this.getNumbers()).filter(
       (objeto) => objeto.status === "PENDENTE"
     );
+
     const msg =
-      "🎉 Descubra o CINEFLICK por apenas R$19,90/mês! 🎬 Mergulhe em um mundo de entretenimento com mais de 60.000 conteúdos em qualidade SD, HD, FHD e 4K! 📺✨ Com nosso guia de programação (EPG), você nunca perde seu programa favorito. Assista onde quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Pacote completo de filmes e séries te espera! Não fique de fora, venha assistir ao que há de melhor!                                                                                                 Responda *Eu quero* se quiser *instalação gratuita e acesso teste* ";
+      "🎉 Conheça o CINEFLICK: entretenimento sem limites por apenas R$19,90/mês! 🎬\nAcesse mais de 60.000 conteúdos de qualidade em SD, HD, FHD e 4K! 📺✨ Com atualizações constantes, você sempre encontra as últimas novidades — incluindo filmes recém-saídos do cinema direto para o CINEFLICK!\nAssista onde e como quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Aproveite um catálogo completo de filmes, séries e muito mais em um só lugar.\n💥 Responda “Eu quero” agora para garantir instalação gratuita e acesso teste!";
 
     while (true) {
       if (!this.isWithinSchedule()) {
@@ -77,6 +121,14 @@ class MessageService {
               where: { id: contato.id },
               data: { status: "ENVIADO" },
             });
+            await prisma.messageLog.create({
+              data: {
+                contactId: contato.id,
+                message: ` Mensagem enviada para ${
+                  contato.number
+                } às ${new Date().toLocaleTimeString()} corretamente`,
+              },
+            });
           })
           .catch((error) => {
             console.log("Erro ao enviar mensagem:", error);
@@ -86,7 +138,8 @@ class MessageService {
         await new Promise((resolve) => setTimeout(resolve, this.delay));
 
         if (!this.isWithinSchedule()) {
-          console.log("pausando envios por hoje...");
+          console.log("por hoje deu...");
+          await this.relatoriofimdodia();
           break;
         }
       }
