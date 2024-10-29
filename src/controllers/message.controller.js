@@ -1,46 +1,44 @@
-const { log } = require("console");
 const MessageService = require("../services/message.service");
 const messageService = new MessageService();
 const fs = require("fs");
+const path = require("path");
 
 class MessageController {
   async addNumber(req, res) {
-    fs.readFile(
-      "c:/coder.mattoso/zapbo/temps/voucher.json",
-      "utf8",
-      async (err, data) => {
-        let listNumbers = [];
+    try {
+      const diretoryPath = "c:/coder.mattoso/zapbo/temps/";
+      const n_voltas = messageService.countFilesInDirectory(diretoryPath); // Defina o número de voltas
+      let list_numbers = [];
+      
+      
 
-        if (err) {
-          throw new Error(`Erro ao ler arquivo: ${err}`);
-        }
+      for (let i = 1; i <= n_voltas; i++) {
+        const file_path = path.join(diretoryPath, `grupo (${i}).json`);
 
-        const numeros = JSON.parse(data);
+        if (!fs.existsSync(file_path))
+          throw new Error(`Arquivo não encontrado: ${file_path}`);
+
+        const contatos = JSON.parse(fs.readFileSync(file_path, "utf-8"));
+
+      
 
         await Promise.all(
-          numeros.map(async (objetoContato) => {
-            const n = objetoContato.phone_number.replace("+", "");
-
-            const existingContact = await messageService.addNumber(n);
-
-            listNumbers.push(existingContact);
+          contatos.map(async (c) => {
+            const numeroFormatado = c.phone_number.replace("+", "");
+            const numeroExistente = await messageService.addNumber(
+              numeroFormatado
+            );
+            list_numbers.push(numeroExistente);
           })
-        )
-          .then(() => {
-            res.status(201).json({
-              message: `${listNumbers.length} números adicionados com sucesso`,
-              numbersAdded: listNumbers,
-            });
-          })
-          .catch((error) => {
-            res
-              .status(500)
-              .json({ message: "Erro ao adicionar números", error });
-          });
+        );
       }
-    );
 
-    // const { numbers } = req.body;
+      res.status(200).json({
+        message: `${list_numbers.length} números adicionados com sucesso`,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao adicionar números", error });
+    }
   }
 
   async getNumbers(req, res) {
@@ -54,7 +52,9 @@ class MessageController {
 
     await messageService
       .send(message)
-      .then(() => { res.status(200).json({ message: "Mensagem enviada com sucesso" }); })
+      .then(() => {
+        res.status(200).json({ message: "Mensagem enviada com sucesso" });
+      })
       .catch((error) => {
         res.status(500).json({ message: "Erro ao enviar mensagem", error });
       });

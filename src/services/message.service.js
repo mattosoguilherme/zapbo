@@ -1,5 +1,7 @@
 const prisma = require("../config/prisma.cliente");
 const { sendBailey, sendAdm, sendTest } = require("../config/baileys.client");
+const fs = require("fs");
+const path = require("path");
 
 class MessageService {
   constructor() {
@@ -71,7 +73,10 @@ class MessageService {
   }
 
   async send(mensagem) {
-    await sendTest();
+    const msg =
+      "🎉 Conheça o CINEFLICK (acesse: bit.ly/iptvpremiuncineflick) : entretenimento sem limites por apenas R$19,90/mês! 🎬\nAcesse mais de 60.000 conteúdos de qualidade em SD, HD, FHD e 4K! 📺✨ Com atualizações constantes, você sempre encontra as últimas novidades — incluindo filmes recém-saídos do cinema direto para o CINEFLICK!\nAssista onde e como quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Aproveite um catálogo completo de filmes, séries e muito mais em um só lugar.\n💥 Envie um *Oi* agora para garantir instalação gratuita e acesso teste!\n\nhttps://wa.me/5511972784647?text=Oi ";
+
+    await sendAdm(msg);
   }
 
   // Função para verificar se estamos dentro do horário permitido
@@ -85,18 +90,18 @@ class MessageService {
     // // Espera até o horário de início para começar
     // await this.waitUntilStartHour();
 
-    const tteste = [
+    const teste = [
       { number: "5511992767398", id: 1 },
       { number: "5511992767398", id: 2 },
       { number: "5511992767398", id: 3 },
     ];
 
     const contatos = (await this.getNumbers()).filter(
-      (objeto) => objeto.status === "PENDENTE"
+      (objeto) => objeto.status === "PENDENTE" || objeto.status === "PEDDING"
     );
 
     const msg =
-      "🎉 Conheça o CINEFLICK: entretenimento sem limites por apenas R$19,90/mês! 🎬\nAcesse mais de 60.000 conteúdos de qualidade em SD, HD, FHD e 4K! 📺✨ Com atualizações constantes, você sempre encontra as últimas novidades — incluindo filmes recém-saídos do cinema direto para o CINEFLICK!\nAssista onde e como quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Aproveite um catálogo completo de filmes, séries e muito mais em um só lugar.\n💥 Responda “Eu quero” agora para garantir instalação gratuita e acesso teste!";
+      "🎉 Conheça o CINEFLICK (acesse: bit.ly/iptvpremiuncineflick) : entretenimento sem limites por apenas R$19,90/mês! 🎬\nAcesse mais de 60.000 conteúdos de qualidade em SD, HD, FHD e 4K! 📺✨ Com atualizações constantes, você sempre encontra as últimas novidades — incluindo filmes recém-saídos do cinema direto para o CINEFLICK!\nAssista onde e como quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Aproveite um catálogo completo de filmes, séries e muito mais em um só lugar.\n💥 Responda “Eu quero” agora para garantir instalação gratuita e acesso teste!";
 
     while (true) {
       if (!this.isWithinSchedule()) {
@@ -147,6 +152,24 @@ class MessageService {
       break;
     }
   }
+
+  countFilesInDirectory(directoryPath) {
+    try {
+      // Lê o diretório de forma síncrona e filtra apenas arquivos
+      const files = fs.readdirSync(directoryPath);
+      const fileCount = files.filter((file) => {
+        const filePath = path.join(directoryPath, file);
+        return fs.lstatSync(filePath).isFile();
+      }).length;
+  
+      console.log(`Número de arquivos na pasta '${directoryPath}': ${fileCount}`);
+      return fileCount;
+    } catch (err) {
+      console.error(`Erro ao ler o diretório: ${err.message}`);
+      return 0; // Retorna 0 em caso de erro
+    }
+  }
+  
 }
 
 module.exports = MessageService;
