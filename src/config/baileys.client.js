@@ -66,6 +66,8 @@ const sendBailey = async (number, message) => {
     "c:/coder.mattoso/zapbo/src/assets/ocorvo.png",
     "c:/coder.mattoso/zapbo/src/assets/omaniaco.PNG",
     "c:/coder.mattoso/zapbo/src/assets/opoco.jpeg",
+    "c:/coder.mattoso/zapbo/src/assets/malvadofavorito.PNG",
+    "c:/coder.mattoso/zapbo/src/assets/venon3.PNG",
   ];
   let img = listImg[Math.floor(Math.random() * listImg.length)];
 
