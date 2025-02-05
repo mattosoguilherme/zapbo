@@ -71,13 +71,14 @@ const sendBailey = async (number, message) => {
   ];
   let img = listImg[Math.floor(Math.random() * listImg.length)];
 
-  const buffer = readFileSync(img);
+  const buffer = readFileSync("c:/coder.mattoso/zapbo/src/assets/trailer.mp4");
 
   try {
     // Envia a mensagem após a conexão ser estabelecida
     await sock.sendMessage(`${number}@s.whatsapp.net`, {
-      image: buffer,
+      video: buffer,
       caption: message,
+      gifPlayback: true
     });
   } catch (error) {
     console.log("Erro ao enviar a mensagem:", error);
@@ -103,35 +104,9 @@ const sendAdm = async (message) => {
   }
 };
 
-const sendTest = async () => {
-  if (!sock) {
-    console.log("A conexão não foi estabelecida ainda.");
-    throw new Error("A conexão não foi estabelecida ainda.");
-  }
-
-  const contentText = "Olá! Escolha uma opção:";
-  const footerText = "Seu texto de rodapé";
-  const buttons = [
-    { buttonId: "id1", buttonText: { displayText: "Botão 1" }, type: 1 },
-    { buttonId: "id2", buttonText: { displayText: "Botão 2" }, type: 1 },
-  ];
-  const buttonMessage = {
-    text: contentText,
-    footer: footerText,
-    buttons: buttons,
-    headerType: 1,
-  };
-
-  await sock.sendMessage("5511992767398@s.whatsapp.net", {
-    buttons: buttonMessage,
-    type: "buttons",
-  });
-};
-
 // Exporta as funções
 module.exports = {
   connect,
   sendBailey,
   sendAdm,
-  sendTest,
 };

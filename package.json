@@ -7,10 +7,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start:dev": "nodemon src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Guilherme Mattoso",
   "license": "ISC",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
@@ -19,6 +19,7 @@
     "axios": "^1.7.7",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
+    "electron": "^33.0.2",
     "express": "^4.21.1",
     "link-preview-js": "^3.0.12",
     "multer": "^1.4.5-lts.1",

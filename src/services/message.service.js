@@ -1,5 +1,5 @@
 const prisma = require("../config/prisma.cliente");
-const { sendBailey, sendAdm, sendTest } = require("../config/baileys.client");
+const { sendBailey, sendAdm } = require("../config/baileys.client");
 const fs = require("fs");
 const path = require("path");
 
@@ -7,7 +7,7 @@ class MessageService {
   constructor() {
     this.startHour = 7; // Hora de início (9h da manhã, por exemplo)
     this.endHour = 21; // Hora de término (21h, por exemplo)
-    this.delay = 4 * 60 * 1000; // 4 minutos em milissegundos (240000 ms)
+    this.delay = 3 * 60 * 1000; // 2 minutos em milissegundos (240000 ms)
   }
 
   async generateDailyReport(date) {
@@ -101,13 +101,13 @@ class MessageService {
     );
 
     const msg =
-      "🎉 Conheça o CINEFLICK (acesse: bit.ly/iptvpremiuncineflick) : entretenimento sem limites por apenas R$19,90/mês! 🎬\nAcesse mais de 60.000 conteúdos de qualidade em SD, HD, FHD e 4K! 📺✨ Com atualizações constantes, você sempre encontra as últimas novidades — incluindo filmes recém-saídos do cinema direto para o CINEFLICK!\nAssista onde e como quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Aproveite um catálogo completo de filmes, séries e muito mais em um só lugar.\n💥 Responda “Eu quero” agora para garantir instalação gratuita e acesso teste!";
+      "🎬 *Últimas Vagas para o CINEFLICK!* 🎉\n*Atenção! Poucas vagas restantes para o plano trimestral por apenas R$39,90/mês* — menos do que uma pizza! 🍕🔥 Aproveite essa oportunidade única de acessar um mundo de entretenimento com mais de **60.000 conteúdos em *até 4K*!\n🚀 **Assista aos lançamentos direto do cinema no conforto da sua casa** e tenha sempre algo novo com atualizações constantes! Assista no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador, com séries, filmes e muito mais, tudo em um só lugar!\n💥 *Responda “Eu quero” agora para garantir sua instalação gratuita* e um teste exclusivo! Mas seja rápido: as vagas são limitadas, e essa oferta especial está quase acabando!";
 
     while (true) {
       if (!this.isWithinSchedule()) {
         console.log("Fora do horário permitido.");
 
-        await new Promise((resolve) => setTimeout(resolve, 1 * 60 * 1000)); // Espera 5min e tenta novamente;
+        await new Promise((resolve) => setTimeout(resolve, 5 * 60 * 1000)); // Espera 5min e tenta novamente;
         continue; // Volta ao início do loop para verificar o horário novamente
       }
 
@@ -139,7 +139,7 @@ class MessageService {
             console.log("Erro ao enviar mensagem:", error);
           });
 
-        // Espera 4 minutos antes de enviar a próxima mensagem
+        // Espera 2 minutos antes de enviar a próxima mensagem
         await new Promise((resolve) => setTimeout(resolve, this.delay));
 
         if (!this.isWithinSchedule()) {
@@ -161,14 +161,30 @@ class MessageService {
         const filePath = path.join(directoryPath, file);
         return fs.lstatSync(filePath).isFile();
       }).length;
-  
-      console.log(`Número de arquivos na pasta '${directoryPath}': ${fileCount}`);
+
+      console.log(
+        `Número de arquivos na pasta '${directoryPath}': ${fileCount}`
+      );
       return fileCount;
     } catch (err) {
       console.error(`Erro ao ler o diretório: ${err.message}`);
       return 0; // Retorna 0 em caso de erro
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 }
 
