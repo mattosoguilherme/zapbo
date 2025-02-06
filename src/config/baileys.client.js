@@ -95,7 +95,7 @@ const sendAdm = async (message) => {
 
   try {
     // Envia a mensagem após a conexão ser estabelecida
-    await sock.sendMessage(`5511992767398@s.whatsapp.net`, {
+    await sock.sendMessage(`5511956078403@s.whatsapp.net`, {
       text: message,
     });
   } catch (error) {

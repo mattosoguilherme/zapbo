@@ -73,10 +73,8 @@ class MessageService {
   }
 
   async send(mensagem) {
-    const msg =
-      "🎉 Conheça o CINEFLICK (acesse: bit.ly/iptvpremiuncineflick) : entretenimento sem limites por apenas R$19,90/mês! 🎬\nAcesse mais de 60.000 conteúdos de qualidade em SD, HD, FHD e 4K! 📺✨ Com atualizações constantes, você sempre encontra as últimas novidades — incluindo filmes recém-saídos do cinema direto para o CINEFLICK!\nAssista onde e como quiser: no seu smartphone, tablet, TV Box, Chromecast, Smart TV ou computador! Aproveite um catálogo completo de filmes, séries e muito mais em um só lugar.\n💥 Envie um *Oi* agora para garantir instalação gratuita e acesso teste!\n\nhttps://wa.me/5511972784647?text=Oi ";
-
-    await sendAdm(msg);
+    const tabelaProdutos = " PEDIDOS:\n\nQTD 02 BOLINHO - R$ 20,00\nQTD 02 COPINHO DA FELICIDADE - R$ 24,00\nQTD 02 CX SURPRESA DE UVA - R$ 12,00\nQTD 02 TRUFA - R$ 12,00\n\n*Total: R$ 68,00*"
+    await sendAdm(tabelaProdutos);
   }
 
   // Função para verificar se estamos dentro do horário permitido
@@ -171,21 +169,6 @@ class MessageService {
       return 0; // Retorna 0 em caso de erro
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
 }
 
 module.exports = MessageService;
