@@ -48,7 +48,7 @@ class MessageController {
   }
 
   async sendMessage(req, res) {
-    const { message } = req.body;
+    const { message, numero } = req.body;
 
     await messageService
       .send(message)

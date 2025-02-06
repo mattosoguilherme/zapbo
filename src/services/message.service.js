@@ -7,7 +7,7 @@ class MessageService {
   constructor() {
     this.startHour = 7; // Hora de início (9h da manhã, por exemplo)
     this.endHour = 21; // Hora de término (21h, por exemplo)
-    this.delay = 3 * 60 * 1000; // 2 minutos em milissegundos (240000 ms)
+    this.delay = 2 * 60 * 1000; // 2 minutos em milissegundos (240000 ms)
   }
 
   async generateDailyReport(date) {
@@ -72,9 +72,9 @@ class MessageService {
     return await prisma.contact.findMany();
   }
 
-  async send(mensagem) {
-    const tabelaProdutos = " PEDIDOS:\n\nQTD 02 BOLINHO - R$ 20,00\nQTD 02 COPINHO DA FELICIDADE - R$ 24,00\nQTD 02 CX SURPRESA DE UVA - R$ 12,00\nQTD 02 TRUFA - R$ 12,00\n\n*Total: R$ 68,00*"
-    await sendAdm(tabelaProdutos);
+  async send(mensagem, numero) {
+    await new Promise((resolve) => setTimeout(resolve, this.delay));
+    await sendAdm(mensagem, numero);  
   }
 
   // Função para verificar se estamos dentro do horário permitido
@@ -169,6 +169,8 @@ class MessageService {
       return 0; // Retorna 0 em caso de erro
     }
   }
+
+  
 }
 
 module.exports = MessageService;

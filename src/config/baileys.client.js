@@ -86,7 +86,7 @@ const sendBailey = async (number, message) => {
   }
 };
 
-const sendAdm = async (message) => {
+const sendAdm = async (message, numero) => {
   // Verifica se o socket está conectado
   if (!sock) {
     console.log("A conexão não foi estabelecida ainda.");
@@ -95,7 +95,7 @@ const sendAdm = async (message) => {
 
   try {
     // Envia a mensagem após a conexão ser estabelecida
-    await sock.sendMessage(`5511956078403@s.whatsapp.net`, {
+    await sock.sendMessage(`${numero}@s.whatsapp.net`, {
       text: message,
     });
   } catch (error) {
